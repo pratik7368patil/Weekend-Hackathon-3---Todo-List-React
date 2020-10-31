@@ -7,6 +7,9 @@ function App() {
   const [empty, setEmpty] = React.useState(true);
 
   const addTask = () => {
+    if (task === "") {
+      return;
+    }
     const copyList = [...list];
     copyList.push({
       id: Math.floor(Math.random() * 294365),
@@ -14,6 +17,7 @@ function App() {
       isEditable: false
     });
     setList(copyList);
+    setTask("");
   };
 
   const removeTask = (id) => {
@@ -65,13 +69,17 @@ function App() {
 
   return (
     <div id="main">
-      <textarea id="task" onChange={(event) => setTask(event.target.value)} />
+      <textarea
+        id="task"
+        value={task}
+        onChange={(event) => setTask(event.target.value)}
+      />
       <button id="btn" onClick={addTask}>
         Add task
       </button>
       {list.map((item) => {
         return (
-          <div key={item.id}>
+          <div className="list" key={item.id}>
             {item.isEditable ? (
               <>
                 <textarea
