@@ -78,7 +78,7 @@ function ListItem(props) {
   };
 
   return (
-    <div className="list">
+    <div key={item.id}>
       {isEditable ? (
         <>
           <textarea
@@ -92,11 +92,11 @@ function ListItem(props) {
         </>
       ) : (
         <>
-          <span>{item.name}</span>
-          <button className="edit" onClick={() => removeTask(item.id)}>
+          <span className="list">{item.name}</span>
+          <button className="delete" onClick={() => removeTask(item.id)}>
             Delete
           </button>
-          <button className="delete" onClick={() => toggleEdit()}>
+          <button className="edit" onClick={() => toggleEdit()}>
             Edit
           </button>
         </>
