@@ -1,10 +1,9 @@
 import React from "react";
 import "./../styles/App.css";
 
-function App() {
+export default function App() {
   const [list, setList] = React.useState([]);
   const [task, setTask] = React.useState("");
-  const [empty, setEmpty] = React.useState(true);
 
   const addTask = () => {
     if (task === "") {
@@ -13,8 +12,7 @@ function App() {
     const copyList = [...list];
     copyList.push({
       id: Math.floor(Math.random() * 294365),
-      name: task,
-      isEditable: false
+      name: task
     });
     setList(copyList);
     setTask("");
@@ -26,35 +24,7 @@ function App() {
     setList(newCopyList);
   };
 
-  const toggleEditOn = (id) => {
-    const copyList = [...list];
-    const newList = copyList.map((item) => {
-      const newItem = { ...item };
-      if (item.id === id) {
-        newItem.isEditable = true;
-      }
-      return newItem;
-    });
-    setList(newList);
-  };
-
-  const toggleEditOff = (id) => {
-    const copyList = [...list];
-    const newList = copyList.map((item) => {
-      const newItem = { ...item };
-      if (item.id === id) {
-        newItem.isEditable = false;
-      }
-      return newItem;
-    });
-    setList(newList);
-  };
-
   const editTask = (name, id) => {
-    if (name === "") {
-      setEmpty(true);
-      return;
-    }
     const copyList = [...list];
     const newList = copyList.map((item) => {
       const newItem = { ...item };
@@ -64,7 +34,6 @@ function App() {
       return newItem;
     });
     setList(newList);
-    setEmpty(false);
   };
 
   return (
@@ -79,34 +48,59 @@ function App() {
       </button>
       {list.map((item) => {
         return (
-          <div className="list" key={item.id}>
-            {item.isEditable ? (
-              <>
-                <textarea
-                  className="editTask"
-                  onChange={(event) => editTask(event.target.value, item.id)}
-                />
-                <button
-                  className="saveTask"
-                  onClick={() => (empty ? null : toggleEditOff(item.id))}
-                >
-                  Save
-                </button>
-              </>
-            ) : null}
-
-            <span>{item.name}</span>
-            <button className="edit" onClick={() => removeTask(item.id)}>
-              Delete
-            </button>
-            <button className="delete" onClick={() => toggleEditOn(item.id)}>
-              Edit
-            </button>
-          </div>
+          <ListItem
+            key={item.id}
+            item={item}
+            removeTask={removeTask}
+            editTask={editTask}
+          />
         );
       })}
     </div>
   );
 }
 
-export default App;
+function ListItem(props) {
+  const { removeTask, item, editTask } = props;
+  const [newName, setNewName] = React.useState(item.name);
+  const [isEditable, setIsEditable] = React.useState(false);
+
+  const toggleEdit = () => {
+    setIsEditable(true);
+  };
+
+  const changeName = (id) => {
+    if (newName.trim() === "") {
+      return;
+    }
+    editTask(newName, id);
+    setIsEditable(false);
+  };
+
+  return (
+    <div className="list">
+      {isEditable ? (
+        <>
+          <textarea
+            className="editTask"
+            value={newName}
+            onChange={(event) => setNewName(event.target.value)}
+          />
+          <button className="saveTask" onClick={() => changeName(item.id)}>
+            Save
+          </button>
+        </>
+      ) : (
+        <>
+          <span>{item.name}</span>
+          <button className="edit" onClick={() => removeTask(item.id)}>
+            Delete
+          </button>
+          <button className="delete" onClick={() => toggleEdit()}>
+            Edit
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
